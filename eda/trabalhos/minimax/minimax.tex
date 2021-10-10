@@ -26,9 +26,9 @@
 }
 
 \begin{abstract}
-  Árvores minimax tem sido usadas em conceitos de jogos de soma zero. 
+  Árvores minimax têm sido usadas em conceitos de jogos de soma zero. 
   Neste trabalho veremos algumas implicações desta estrutura de dados, 
-  assim como pseudo-código e exemplos de utilização em problemas reais.
+  assim como pseudo-código, complexidade, trade-offs e exemplos de utilização em problemas reais.
 \end{abstract}
 
 \keywords{algoritmos, estruturas de dados, árvores}
@@ -37,9 +37,9 @@
 \pagestyle{plain}
 
 \section{Introdução}
-Este trabalho apresenta o algoritmo minimax para jogos de soma zero. 
+Este trabalho apresenta o algoritmo minimax \cite{russel2010} para jogos de soma zero. 
 Obter algoritmos que calculem uma estratégia capaz de recomendar uma ação para qualquer estado.
-As demais seções são Funcionamento, incluindo pseudocódigo, Complexidade, Trade-offs, Aplicações e por fim as Conclusões do trabalho.
+As demais seções são Funcionamento, incluindo Pseudocódigo e Complexidade, Trade-offs, Aplicações e por fim as Conclusões do trabalho.
 
 \subsection{Soma Zero}
 Em um jogo determinístico de soma zero, o placar final de um jogo em que dois jogadores são adversários.
@@ -50,9 +50,13 @@ Além disso, os métodos de busca são sempre adversários, puramente competitiv
 
 Considerando essa premissa, o placar total deve ser sempre zero.
 
+Muitos trabalhos com variações do minimax têm sido apresentados no decorrer dos anos na literatura \cite{Diderich93}
+
 \section{Algoritmo Minimax}
 Em uma busca minimax, a árvore representa o espaço de estados, onde os jogadores se alternam nos movimentos e o valor minimax é computado para cada nó, onde se busca a melhor utilidade contra um agente adversário ótimo, ou seja, a premissa é que o adversário jogue de forma racional
 Para definir Minimax, necessitaremos de alguns conceitos.
+
+A idéia do Minimax é determinar uma estratégia ótima para o jogador MAX e então decidir o melhor primeiro movimento.
 \begin{itemize}
   \item{Estados: S, onde S0 é o estado inicial;}
   \item{Jogadores: P = {1...N}}
@@ -64,11 +68,17 @@ Para definir Minimax, necessitaremos de alguns conceitos.
 
 Solução par aum jogador é uma política: S -> A
 
-Exatamente como DFS, tornando inviável quando a árvore é profunda
-Tempo: O(b elevado a m)
-Espaço: O(bm)
+\subsection{Passos do Minimax}
 
-Para isso, técnicas de poda são necessárias ao se trabalhar como representação minimax.
+\begin{itemize}
+  \item Gerar a árvore, da raíz até os estados terminais;
+  \item Aplicar a função de utilidade para cada estado terminal para computar o valor;
+  \item Usar a função de utilidade para determinar a utilidade dos nós um nível acima na árvore de busca;
+  \item Calcular o valor dos nós filhos até a raíz, uma camada por vez;
+  \item MAX escolhe o movimento que leva ao maior valor 
+\end{itemize}
+
+O movimento realizado é chamado de decisão minimax, por maximizar a utilidade sob a premissa que o oponente jogará para minimizá-lo perfeitamente.
 
 \subsection{Pseudo-código}
 O pseudocódigo do algoritmo Minimax segue como na imagem abaixo. 
@@ -106,6 +116,25 @@ As funções {\itshape minValue} e {\itshape maxValue} possuem o mesmo funcionam
   }
 \end{algorithm}
 
+\subsection{Complexidade}
+
+Possui a mesma complexidade que a busca em profundidade {\itshape (depth-first search)}, tornando inviável quando a árvore é profunda.
+Considerando que m é a profundidade máxima da árvore e b é a quantidade de movimentos válidos em cada ponto, temos que:
+\begin{itemize}
+  \item Complexide de tempo: $O(b^m)$
+  \item Complexidade de espaço: $O(bm)$s
+\end{itemize}
+
+Em termos práticos, esta complexidade de tempo é impraticável. Para isso, técnicas de poda são necessárias ao se trabalhar como representação Minimax, como será mostrado na próxima seção.
+
+\section{Funções de avaliação}
+
+Uma função de avaliação é projetada para retornar uma estimativa da utilidade esperada do jogo a partir de um estado definido. 
+A medida de qualidade da função de avaliação deve concordar com a função de utilidade nos estados terminais. Além disso, não deve demorar muito tempo para executar.
+
+Existe um trade-off entre a acurácia da função de avaliação e o custo do tempo de execução. 
+A maioria dos jogos usam uma função de avaliação linear.
+
 
 \section{Trade-offs}
 
@@ -121,30 +150,29 @@ Funções de avaliação pontuam estados não-terminais na busca de profundidade
 FUnção ideal retornaria o valor minimax real da posição.
 
 \subsection{Poda Alfa-Beta}
-Computando o valor MIN em algum nó N
-Percorrer os filhos de N
-A estimativa de n a respeito do valor MIN de seus filhos está Considerando
-O valor de N é importante para MAX
-Seja a o melhor valor de MAX em qualquer ponto até a raiz
-Se n se torna pior que a, MAX irá evitá-lo, então podemos parar de considerar os demais filhos de n
+Assumindo que uma função de avaliação foi implementada junto a uma busca minimax, mesmo assim, o espaço de jogadas a frente ficará bastante limitado, se há a necessidade de percorrer toda a árvore.
+Daí vem o conceito da poda: uma forma de tomar uma decisão minimax correta sem precisar percorrer toda a árvore de buscas, buscando não computar ramificações que possivelmente não interferem na decisão minimax.
 
-Propriedades da poda alfa-beta
+\subsubsection{Passos da poda}
+\begin{itemize}
+  \item Computando o valor MIN em algum nó N
+  \item Percorrer os filhos de N
+  \item A estimativa de n a respeito do valor MIN de seus filhos está Considerando
+  \item O valor de N é importante para MAX
+  \item Seja a o melhor valor de MAX em qualquer ponto até a raiz
+  \item Se n se torna pior que a, MAX irá evitá-lo, então podemos parar de considerar os demais filhos de n
+\end{itemize}
+
+\subsubsection{Propriedades da poda alfa-beta}
 Não afeta o minimax para raíz
 Valores dos nós intermediários podem estar errados
 
 \section{Aplicações}
 Muito utilizado em Teoria dos Jogos, na modelagem de problemas de adversários, comum em sistemas multiagentes, na economia.
 
-\section{Conclusão}
+\section{Conclusões}
 O algoritmo Minimax utiliza árvores como estrutura de dados e busca representar dois agentes que buscam vencer, provocando a derrota do outro, em um jogo de soma zero. 
-Este conceito tem sido bastante estudado na Economia, através da Teoria dos Jogos. 
-
-\section{Referências}
-\begin{itemize}
-  \item {Árvores de Jogos Minimax e Poda Alfa-Beta (UFES)}\
-  \item {Aula de Busca Competitiva (Árvores minimax) Sérgio Queiroz, CIn-UFPE}\
-  \item {Artificial Intelligence: A modern approach, Russel Norvig}\
-\end{itemize}
+Este conceito tem sido bastante estudado na Economia, através da Teoria dos Jogos. Como a maioria das decisões ótimas de jogos são intratáveis, algoritmos precisam lidar com premissas e aproximações.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sample-base}
