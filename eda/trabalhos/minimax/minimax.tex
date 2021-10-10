@@ -71,6 +71,8 @@ Espaço: O(bm)
 Para isso, técnicas de poda são necessárias ao se trabalhar como representação minimax.
 
 \subsection{Pseudo-código}
+O pseudocódigo do algoritmo Minimax segue como na imagem abaixo. 
+As funções {\itshape minValue} e {\itshape maxValue} possuem o mesmo funcionamento, apenas invertendo a lógica.
 
 \begin{algorithm}
 \DontPrintSemicolon
@@ -81,24 +83,26 @@ Para isso, técnicas de poda são necessárias ao se trabalhar como representaç
     \If{ state $s$ is final}{
         \Return{$s$}\;
     }
-    min-value($s$)\;
-    max-value($s$)\;
+    minValue($s$)\;
+    maxValue($s$)\;
   }
 
-  \SetKwProg{max-value}{Function \emph{min-value}}{}{end}
-  \max-value{Object state}{
-    init v = - inf\;
-    \ForEach(){successor}{state}:
-    v = max(v, value(successor))\;
-    return v\;
+  \SetKwProg{maxValue}{maxValue}{}{}
+  \maxValue{$s$}{
+    init v = -inf\;
+    \ForEach{successor in s}{
+      v = max(v, value(successor))\;
+    }
+    \KwRet{v}\;
   }
 
-  \SetKwProg{min-value}{Function \emph{min-value}}{}{end}
-  \min-value{Object state}{
-    init v = - inf\;
-    \ForEach(){successor}{state}:
-    v = min(v, value(successor))\;
-    return v\;
+  \SetKwProg{minValue}{minValue}{}{}
+  \minValue{$s$}{
+    init v = +inf\;
+    \ForEach{successor in s}{
+      v = min(v, value(successor))\;
+    }
+    \KwRet{v}\;
   }
 \end{algorithm}
 
@@ -132,6 +136,8 @@ Valores dos nós intermediários podem estar errados
 Muito utilizado em Teoria dos Jogos, na modelagem de problemas de adversários, comum em sistemas multiagentes, na economia.
 
 \section{Conclusão}
+O algoritmo Minimax utiliza árvores como estrutura de dados e busca representar dois agentes que buscam vencer, provocando a derrota do outro, em um jogo de soma zero. 
+Este conceito tem sido bastante estudado na Economia, através da Teoria dos Jogos. 
 
 \section{Referências}
 \begin{itemize}
