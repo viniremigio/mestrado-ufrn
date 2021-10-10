@@ -13,8 +13,8 @@
 
 \begin{document}
 
-\title{Árvores Minimax}
-\subtitle{DIMXXXX - Estruturas de Dados}
+\title{Árvores Minimax para Jogos de Soma Zero}
+\subtitle{DIM0806 - Estruturas de Dados e Algoritmos}
 
 \author{Tiago Vinícius Remígio da Costa}
 \email{vinicius.remigio@gmail.com}
@@ -37,81 +37,108 @@
 \pagestyle{plain}
 
 \section{Introdução}
-ACM's consolidated article template, introduced in 2017, provides a
-consistent \LaTeX\ style for use across ACM publications, and
-incorporates accessibility and metadata-extraction functionality
-necessary for future Digital Library endeavors. Numerous ACM and
-SIG-specific {\itshape LaTeX} templates have been examined, and their unique
-features incorporated into this single new template.
+Este trabalho apresenta o algoritmo minimax para jogos de soma zero. 
+Obter algoritmos que calculem uma estratégia capaz de recomendar uma ação para qualquer estado.
+As demais seções são Funcionamento, incluindo pseudocódigo, Complexidade, Trade-offs, Aplicações e por fim as Conclusões do trabalho.
 
-\section{Funcionamento}
-As noted in the introduction, the ``\verb|acmart|'' document class can
-be used to prepare many different kinds of documentation --- a
-double-blind initial submission of a full-length technical paper, a
-two-page SIGGRAPH Emerging Technologies abstract, a ``camera-ready''
-journal article, a SIGCHI Extended Abstract, and more --- all by
-selecting the appropriate {\itshape template style} and {\itshape
-  template parameters}.
+\subsection{Soma Zero}
+Em um jogo determinístico de soma zero, o placar final de um jogo em que dois jogadores são adversários.
+para cada jogador pode ser vitória {\itshape(1 ponto)}, empate {\itshape(0 pontos)} ou derrota {\itshape(-1 ponto)}. 
+Agentes jogadores possuem utilidades opostas. Isso permite que a função utilidade seja a mesma.
+
+Além disso, os métodos de busca são sempre adversários, puramente competitivos, onde cada jogador está tentando ganhar e também provocando a derrota do oponente.
+
+Considerando essa premissa, o placar total deve ser sempre zero.
+
+\section{Algoritmo Minimax}
+Em uma busca minimax, a árvore representa o espaço de estados, onde os jogadores se alternam nos movimentos e o valor minimax é computado para cada nó, onde se busca a melhor utilidade contra um agente adversário ótimo, ou seja, a premissa é que o adversário jogue de forma racional
+Para definir Minimax, necessitaremos de alguns conceitos.
+\begin{itemize}
+  \item{Estados: S, onde S0 é o estado inicial;}
+  \item{Jogadores: P = {1...N}}
+  \item{Ações: A}
+  \item{Função de Transição: SxA -> S}
+  \item{Teste de parada: S -> {t,f}}
+  \item{Utilidades terminais: SxP -> R}
+\end{itemize}
+
+Solução par aum jogador é uma política: S -> A
+
+Exatamente como DFS, tornando inviável quando a árvore é profunda
+Tempo: O(b elevado a m)
+Espaço: O(bm)
+
+Para isso, técnicas de poda são necessárias ao se trabalhar como representação minimax.
 
 \subsection{Pseudo-código}
 
 \begin{algorithm}
-  \caption{Bytecode Generation Overview}
+\DontPrintSemicolon
+  \caption{Algoritmo Minimax}
   \label{alg:generator}
-  \SetKwProg{generate}{Function \emph{generate}}{}{end}
-  
-  Map store=new Map(obj, queue)\;
-  \generate{Object pivot}{
-       \ForAll{child $c$ in pivot}{
-       \If{ $c$'s FieldContext is not set and $c$ is fusible}{
-            generate($c$)\;
-        }
-       }
-       build pivot's fieldContext $fc$\;
-       EmitClassName\;
-       EmitFields($fc$)\;
-       EmitMethods($fc$)\;
+  \SetKwProg{minimax}{Function \emph{minimax}}{}{end}
+  \minimax{Object state}{
+    \If{ state $s$ is final}{
+        \Return{$s$}\;
+    }
+    min-value($s$)\;
+    max-value($s$)\;
+  }
+
+  \SetKwProg{max-value}{Function \emph{min-value}}{}{end}
+  \max-value{Object state}{
+    init v = - inf\;
+    \ForEach(){successor}{state}:
+    v = max(v, value(successor))\;
+    return v\;
+  }
+
+  \SetKwProg{min-value}{Function \emph{min-value}}{}{end}
+  \min-value{Object state}{
+    init v = - inf\;
+    \ForEach(){successor}{state}:
+    v = min(v, value(successor))\;
+    return v\;
   }
 \end{algorithm}
-
-\subsection{Template Parameters}
-
-In addition to specifying the {\itshape template style} to be used in
-formatting your work, there are a number of {\itshape template parameters}
-which modify some part of the applied template style. A complete list
-of these parameters can be found in the {\itshape \LaTeX\ User's Guide.}
-
-Frequently-used parameters, or combinations of parameters, include:
-\begin{itemize}
-\item {\verb|anonymous,review|}: Suitable for a ``double-blind''
-  conference submission. Anonymizes the work and includes line
-  numbers. Use with the \verb|\acmSubmissionID| command to print the
-  submission's unique ID on each page of the work.
-\item{\verb|authorversion|}: Produces a version of the work suitable
-  for posting by the author.
-\item{\verb|screen|}: Produces colored hyperlinks.
-\end{itemize}
-
-This document uses the following string as the first command in the
-source file:
-\begin{verbatim}
-\documentclass[sigplan,screen]{acmart}
-\end{verbatim}
 
 
 \section{Trade-offs}
 
-The ``\verb|acmart|'' document class requires the use of the
-``Libertine'' typeface family. Your \TeX\ installation should include
-this set of packages. Please do not substitute other typefaces. The
-``\verb|lmodern|'' and ``\verb|ltimes|'' packages should not be used,
-as they will override the built-in typeface families.
+Em problemas reais, é impossível busacar até as folhas. 
+Uma solução é trabalhar com busca em profundidade limitada, substituir por uma função de avaliação para posições que não são folhas.
+Não há garantia que o resultado será ótimo, por isso aumentar a profundidade faz bastante diferença.
+
+Se a profundidade for maior, a complexidade da função pode ser menor. Mas se a poda for mais rasa, a função de avaliação precisaria ser mais complexa. 
+Acarretando maior capacidade de computação. 
+O ideal é chegar uma ponderação na qual consiga-se descer para uma maior profundidade e que a função não seja muito complexa de calcular.
+
+Funções de avaliação pontuam estados não-terminais na busca de profundidade limitada.
+FUnção ideal retornaria o valor minimax real da posição.
+
+\subsection{Poda Alfa-Beta}
+Computando o valor MIN em algum nó N
+Percorrer os filhos de N
+A estimativa de n a respeito do valor MIN de seus filhos está Considerando
+O valor de N é importante para MAX
+Seja a o melhor valor de MAX em qualquer ponto até a raiz
+Se n se torna pior que a, MAX irá evitá-lo, então podemos parar de considerar os demais filhos de n
+
+Propriedades da poda alfa-beta
+Não afeta o minimax para raíz
+Valores dos nós intermediários podem estar errados
 
 \section{Aplicações}
+Muito utilizado em Teoria dos Jogos, na modelagem de problemas de adversários, comum em sistemas multiagentes, na economia.
 
 \section{Conclusão}
 
-\section{Citations and Bibliographies}
+\section{Referências}
+\begin{itemize}
+  \item {Árvores de Jogos Minimax e Poda Alfa-Beta (UFES)}\
+  \item {Aula de Busca Competitiva (Árvores minimax) Sérgio Queiroz, CIn-UFPE}\
+  \item {Artificial Intelligence: A modern approach, Russel Norvig}\
+\end{itemize}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sample-base}
