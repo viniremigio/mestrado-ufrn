@@ -29,7 +29,7 @@ class Game:
 
     def apply(self, op: Operator) -> StateNode:
         new_state = deepcopy(self.states[len(self.states)-1])
-        new_state[op.x][op.y] = op.move
+        new_state.position[op.x][op.y] = op.move
         self.states.append(new_state)
         return new_state
 
