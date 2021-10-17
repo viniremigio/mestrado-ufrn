@@ -10,16 +10,23 @@ class Game:
     def evaluation_function(self, state: StateNode) -> float:
         pass
 
+    def apply(self, op: Operator) -> StateNode:
+        pass
+
+    def operator(self, player: Player, x: int, y: int) -> Operator:
+        pass
+
 
 class TicTacToe(Game):
     def __init__(self, state: StateNode):
         self.state = state
         self.states: List[StateNode] = [self.state]
 
-    def operators(self):
-        op1 = Operator(player=Player.PLAYER_1, move="X", x=0, y=0)
-        op2 = Operator(player=Player.PLAYER_2, move="O", x=1, y=0)
-        return [op1, op2]
+    def operator(self, player: Player, x: int, y: int) -> Operator:
+        move = "X" if player == Player.PLAYER_1 else "O"
+        op = Operator(player=player, move=move, x=x, y=y)
+        return op
+
 
     def is_final(self, state: StateNode) -> bool:
         """

@@ -14,14 +14,30 @@ class Minimax:
 
         elif turn == Player.PLAYER_1:
             best_value = -inf
-            for child in state.children:
-                best_value = max(best_value, self.minimax(state=child, depth=depth + 1, turn=Player.PLAYER_2))
+            pos = state.position
+
+            for x in range(3):
+                for y in range(3):
+                    if pos[x][y] == "-":
+                        op = self.game.operator(turn, x, y)
+                        best_value = max(best_value, self.minimax(state=self.game.apply(op),
+                                                                  depth=depth + 1,
+                                                                  turn=Player.PLAYER_2))
+                        pos[x][y] = "-"
             return best_value
 
         else:
             best_value = +inf
-            for child in state.children:
-                best_value = min(best_value, self.minimax(state=child, depth=depth + 1, turn=Player.PLAYER_1))
+            pos = state.position
+
+            for x in range(3):
+                for y in range(3):
+                    if pos[x][y] == "-":
+                        op = self.game.operator(turn, x, y)
+                        best_value = min(best_value, self.minimax(state=self.game.apply(op),
+                                                                  depth=depth + 1,
+                                                                  turn=Player.PLAYER_1))
+                        pos[x][y] = "-"
             return best_value
 
     @staticmethod
