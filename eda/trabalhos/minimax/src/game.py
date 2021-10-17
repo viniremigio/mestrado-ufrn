@@ -4,6 +4,14 @@ from copy import deepcopy
 
 
 class Game:
+    def is_final(self, state: StateNode) -> bool:
+        pass
+
+    def evaluation_function(self, state: StateNode) -> float:
+        pass
+
+
+class TicTacToe(Game):
     def __init__(self, state: StateNode):
         self.state = state
         self.states: List[StateNode] = [self.state]
@@ -14,6 +22,11 @@ class Game:
         return [op1, op2]
 
     def is_final(self, state: StateNode) -> bool:
+        """
+        Determina se o jogo acabou, quando todas as posições foram preenchidas
+        :param state: estado a ser avaliado
+        :return:
+        """
         pos = state.position
         game_over = True
         for i in range(len(pos[0])):
@@ -22,8 +35,7 @@ class Game:
                     game_over &= False
         return game_over
 
-    @staticmethod
-    def evaluation_function(state: StateNode) -> float:
+    def evaluation_function(self, state: StateNode) -> float:
         board: List[List[str]] = state.position
 
         # Se houve vencedor nas linhas
@@ -65,13 +77,21 @@ class Game:
         self.states.append(new_state)
         return new_state
 
-    def show_moves(self):
+    def show_moves(self) -> None:
+        """
+        Imprime o board, mostrando a sequencia de jogadas no tabuleiro
+        """
         for state in self.states:
             self._show_board(state)
             print()
 
     @staticmethod
     def _show_board(state: StateNode) -> None:
+        """
+        Imprime o estado atual do tabuleiro
+        :param state:
+        :return:
+        """
         pos = state.position
         for row in pos:
             for item in row:
