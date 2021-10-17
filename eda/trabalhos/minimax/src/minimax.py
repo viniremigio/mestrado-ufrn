@@ -11,7 +11,7 @@ class Minimax:
 
     def minimax_value(self, state: StateNode, game: Game, player_turn: Player) -> float:
         if game.is_final(state):
-            return game.utility_value(state)
+            return game.evaluation_function(state)
 
         elif player_turn == Player.PLAYER_1:
             value = -inf

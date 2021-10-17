@@ -1,5 +1,4 @@
 from typing import List
-from math import inf
 from components import StateNode, Operator, Player
 from copy import deepcopy
 
@@ -23,8 +22,42 @@ class Game:
                     game_over &= False
         return game_over
 
-    def utility_value(self, state: StateNode) -> float:
-        return 0.0
+    @staticmethod
+    def evaluation_function(state: StateNode) -> float:
+        board: List[List[str]] = state.position
+
+        # Se houve vencedor nas linhas
+        for row in range(0, 3):
+            if board[row][0] == board[row][1] and board[row][1] == board[row][2]:
+                if board[row][0] == 'X':
+                    return +1
+                elif board[row][0] == 'O':
+                    return -1
+
+        # Se houve vencedor nas colunas
+        for col in range(0, 3):
+            if board[0][col] == board[1][col] and board[1][col] == board[2][col]:
+                if board[0][col] == 'X':
+                    return +1
+                elif board[0][col] == 'O':
+                    return -1
+
+        # Se houve vencedor nas diagonais
+        if board[0][0] == board[1][1] and board[1][1] == board[2][2]:
+            if board[0][0] == 'X':
+                return +1
+            elif board[0][0] == 'O':
+                return -1
+
+        if board[0][2] == board[1][1] and board[1][1] == board[2][0]:
+            if board[0][2] == 'X':
+                return +1
+            elif board[0][2] == 'O':
+                return -1
+
+        # Houve empate
+        else:
+            return 0
 
     def apply(self, op: Operator) -> StateNode:
         new_state = deepcopy(self.states[len(self.states)-1])
