@@ -5,9 +5,8 @@ from copy import deepcopy
 
 
 class Game:
-    def __init__(self):
-        board = [["X" for i in range(3)] for j in range(3)]
-        self.state: StateNode = StateNode(board, -inf)
+    def __init__(self, state: StateNode):
+        self.state = state
         self.states: List[StateNode] = [self.state]
 
     def operators(self):

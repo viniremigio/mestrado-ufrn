@@ -11,6 +11,7 @@ class StateNode:
     def __init__(self, position: List[List[str]], value: float):
         self.value = value
         self.position = position
+        self.children = []
 
 
 class Operator:
