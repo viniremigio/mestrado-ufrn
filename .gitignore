@@ -9,3 +9,5 @@
 */*/*/*.bbl
 */*/*/*.blg
 /.idea
+
+eda/trabalhos/minimax/src/__pycache__/
