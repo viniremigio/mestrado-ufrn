@@ -1,5 +1,5 @@
 from game import Game
-from components import Operator, Player, StateNode
+from components import Player, StateNode
 from math import inf
 
 
@@ -29,12 +29,12 @@ class Minimax:
 if __name__ == '__main__':
 
     board = [["-" for i in range(3)] for j in range(3)]
-    state: StateNode = StateNode(board, -inf)
+    s: StateNode = StateNode(board, -inf)
 
-    tic_tac_toe = Game(state)
+    tic_tac_toe = Game(s)
 
     mm = Minimax()
-    output = mm.minimax_decision(state, tic_tac_toe)
+    output = mm.minimax_decision(s, tic_tac_toe)
     print(output)
 
     tic_tac_toe.show_moves()
