@@ -1,29 +1,26 @@
 from game import Game
-from components import Player, StateNode
+from components import StateNode, Player
 from math import inf
 
 
 class Minimax:
 
-    def minimax_decision(self, state: StateNode, game: Game) -> float:
-        value = self.minimax_value(state, game, Player.PLAYER_1)
-        return value
+    def minimax(self, state: StateNode, game: Game, turn: Player) -> float:
 
-    def minimax_value(self, state: StateNode, game: Game, player_turn: Player) -> float:
         if game.is_final(state):
             return game.evaluation_function(state)
 
-        elif player_turn == Player.PLAYER_1:
-            value = -inf
+        elif turn == Player.PLAYER_1:
+            best_value = -inf
             for child in state.children:
-                value = max(value, self.minimax_value(child, game, Player.PLAYER_2))
-            return value
+                best_value = max(best_value, self.minimax(state=child, game=game, turn=Player.PLAYER_2))
+            return best_value
 
         else:
-            value = +inf
+            best_value = +inf
             for child in state.children:
-                value = min(value, self.minimax_value(child, game, Player.PLAYER_1))
-            return value
+                best_value = min(best_value, self.minimax(state=child, game=game, turn=Player.PLAYER_1))
+            return best_value
 
 
 if __name__ == '__main__':
@@ -34,15 +31,7 @@ if __name__ == '__main__':
     tic_tac_toe = Game(s)
 
     mm = Minimax()
-    output = mm.minimax_decision(s, tic_tac_toe)
+    output = mm.minimax(s, tic_tac_toe, Player.PLAYER_1)
     print(output)
 
     tic_tac_toe.show_moves()
-
-
-# TODO
-"""
-Como gerar novas jogadas
-Como representar as possibilidades
-Como calcular a utilidade
-"""
