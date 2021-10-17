@@ -8,10 +8,10 @@ class Player(Enum):
 
 
 class StateNode:
-    def __init__(self, position: List[List[str]], value: float):
+    def __init__(self, position: List[List[str]], value: float, depth: int):
         self.value = value
         self.position = position
-        self.children = []
+        self.depth = depth
 
 
 class Operator:

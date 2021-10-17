@@ -10,7 +10,7 @@ class Game:
     def evaluation_function(self, state: StateNode) -> float:
         pass
 
-    def apply(self, op: Operator) -> StateNode:
+    def apply(self, op: Operator, depth: int) -> StateNode:
         pass
 
     def operator(self, player: Player, x: int, y: int) -> Operator:
@@ -23,10 +23,16 @@ class TicTacToe(Game):
         self.states: List[StateNode] = [self.state]
 
     def operator(self, player: Player, x: int, y: int) -> Operator:
+        """
+        Movimento valido do jogador
+        :param player: Jogador maximizador ou minimizador
+        :param x: posicao do tabuleiro
+        :param y: posicao do tabuleiro
+        :return:
+        """
         move = "X" if player == Player.PLAYER_1 else "O"
         op = Operator(player=player, move=move, x=x, y=y)
         return op
-
 
     def is_final(self, state: StateNode) -> bool:
         """
@@ -43,6 +49,11 @@ class TicTacToe(Game):
         return game_over
 
     def evaluation_function(self, state: StateNode) -> float:
+        """
+        Funcao heuristica, ou de avaliacao, que determina o resultado final do jogo
+        :param state:
+        :return:
+        """
         board: List[List[str]] = state.position
 
         # Se houve vencedor nas linhas
@@ -78,9 +89,17 @@ class TicTacToe(Game):
         else:
             return 0
 
-    def apply(self, op: Operator) -> StateNode:
+    def apply(self, op: Operator, node_depth: int) -> StateNode:
+        """
+        Aplica o operador ao tabuleiro atual, gerando um novo estado.
+        A funcao tambem guarda o historico do tabuleiro
+        :param node_depth:
+        :param op:
+        :return:
+        """
         new_state = deepcopy(self.states[len(self.states)-1])
         new_state.position[op.x][op.y] = op.move
+        new_state.depth = node_depth
         self.states.append(new_state)
         return new_state
 
