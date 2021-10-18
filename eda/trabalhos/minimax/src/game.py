@@ -10,7 +10,7 @@ class Game:
     def evaluation_function(self, state: StateNode) -> float:
         pass
 
-    def apply(self, op: Operator, depth: int) -> StateNode:
+    def apply(self, state: StateNode, op: Operator, depth: int) -> StateNode:
         pass
 
     def operator(self, player: Player, x: int, y: int) -> Operator:
@@ -89,15 +89,16 @@ class TicTacToe(Game):
         else:
             return 0
 
-    def apply(self, op: Operator, node_depth: int) -> StateNode:
+    def apply(self, state: StateNode, op: Operator, node_depth: int) -> StateNode:
         """
         Aplica o operador ao tabuleiro atual, gerando um novo estado.
         A funcao tambem guarda o historico do tabuleiro
+        :param state:
         :param node_depth:
         :param op:
         :return:
         """
-        new_state = deepcopy(self.states[len(self.states)-1])
+        new_state = deepcopy(state)
         new_state.position[op.x][op.y] = op.move
         new_state.depth = node_depth
         self.states.append(new_state)
@@ -108,6 +109,7 @@ class TicTacToe(Game):
         Imprime o board, mostrando a sequencia de jogadas no tabuleiro
         """
         for state in self.states:
+            print(f"Depth: {state.depth}")
             self._show_board(state)
             print()
 

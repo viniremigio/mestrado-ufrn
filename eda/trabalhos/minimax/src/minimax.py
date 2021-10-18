@@ -25,10 +25,10 @@ class MiniMax:
                     if pos[x][y] == "-":
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
-                        best_value = max(best_value, self.mini_max(state=self.game.apply(op, node_depth),
+                        best_value = max(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
                                                                    depth=node_depth,
                                                                    turn=Player.PLAYER_2))
-                        #pos[x][y] = "-"
+                        pos[x][y] = "-"
             return best_value
 
         else:
@@ -40,13 +40,13 @@ class MiniMax:
                     if pos[x][y] == "-":
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
-                        best_value = min(best_value, self.mini_max(state=self.game.apply(op, node_depth),
+                        best_value = min(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
                                                                    depth=node_depth,
                                                                    turn=Player.PLAYER_1))
-                        #pos[x][y] = "-"
+                        pos[x][y] = "-"
             return best_value
 
-    def best_move(self, state: StateNode) -> ((int, int), int):
+    def best_move(self, state: StateNode, player: Player) -> ((int, int), int):
         best_val = -inf
         best_move = (-1, -1)
 
@@ -55,8 +55,11 @@ class MiniMax:
             for j in range(3):
 
                 if board[i][j] == "-":
-                    board[i][j] = "X"
-                    val = self.mini_max(state, 0, Player.PLAYER_2)
+                    op = self.game.operator(player, i, j)
+                    new_state = self.game.apply(state, op, 1)
+
+                    opponent = Player.PLAYER_2 if player == Player.PLAYER_1 else Player.PLAYER_2
+                    val = self.mini_max(new_state, 1, opponent)
                     board[i][j] = "-"
 
                     if val > best_val:
@@ -68,9 +71,9 @@ class MiniMax:
     def winner(value: float) -> None:
         match_winner = "EMPATE"
         if value == +1:
-            match_winner = Player.PLAYER_1
+            match_winner = Player.PLAYER_1.value
         elif value == -1:
-            match_winner = Player.PLAYER_2
+            match_winner = Player.PLAYER_2.value
         print(f"Valor final: {value}. O vencedor é {match_winner}")
 
 
@@ -81,11 +84,12 @@ if __name__ == '__main__':
         ['O', 'O', 'X'],
         ['-', '-', '-']
     ]
+
     s: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe = TicTacToe(s)
 
     mm = MiniMax(tic_tac_toe)
-    move, val = mm.best_move(s)
+    move, val = mm.best_move(s, Player.PLAYER_1)
 
     mm.winner(val)
     print(f"Best move: {move}")
