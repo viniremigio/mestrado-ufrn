@@ -1,6 +1,10 @@
 \documentclass[sigplan,screen]{acmart}
 
 \usepackage[ruled]{algorithm2e}
+\usepackage{graphicx}
+
+\graphicspath{ {./images/} }
+
 \renewcommand{\algorithmcfname}{ALGORITHM}
 %% Remove Permissions and ACM Reference Notes
 \renewcommand\footnotetextcopyrightpermission[1]{}
@@ -122,6 +126,15 @@ As funções {\itshape minValue} e {\itshape maxValue} possuem o mesmo funcionam
   }
 \end{algorithm}
 
+Na figura abaixo segue a árvore minimax gerada pelo algoritmo descrito. 
+Para simplificar a visualização, o estado inicial considerado {\itshape(Depth 0)} já possui algumas jogadas.
+A melhor decisão que o algoritmo retorna, ou seja, maximizando o valor para o jogador MAX é marcar a posição (2,2) do tabuleiro com X.
+
+\begin{figure}[h]
+  \includegraphics[width=8cm]{minimax_tree_1.png}
+  \caption{Árvore MiniMax para um jogo da Velha, dado um estado inicial}
+\end{figure}
+
 \subsection{Complexidade}
 
 Possui a mesma complexidade que a busca em profundidade {\itshape (depth-first search)}, tornando inviável quando a árvore é profunda.
@@ -154,11 +167,14 @@ Acarretando maior capacidade de computação.
 O ideal é chegar uma ponderação na qual consiga-se descer para uma maior profundidade e que a função não seja muito complexa de calcular.
 
 Funções de avaliação pontuam estados não-terminais na busca de profundidade limitada.
-FUnção ideal retornaria o valor minimax real da posição.
+Função ideal retornaria o valor minimax real da posição.
 
 \subsection{Poda Alfa-Beta}
+É uma técnica de otimização para o algoritmo Minimax para reduzir o tempo de computação, por meio de podar branches da árvore por já detectar movimentos melhores disponíveis \cite{Aradhya04}.
 Assumindo que uma função de avaliação foi implementada junto a uma busca minimax, mesmo assim, o espaço de jogadas a frente ficará bastante limitado, se há a necessidade de percorrer toda a árvore.
 Daí vem o conceito da poda: uma forma de tomar uma decisão minimax correta sem precisar percorrer toda a árvore de buscas, buscando não computar ramificações que possivelmente não interferem na decisão minimax.
+
+O alfa é o melhor valor que o jogador MAX pode obter para o nível atual ou acima. Já o beta é o melhor valor que o jogador MIN pode obter para o nível atual ou acima.
 
 \subsubsection{Passos da poda}
 \begin{itemize}

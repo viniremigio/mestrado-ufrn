@@ -8,7 +8,15 @@ class MiniMax:
         self.game = game
 
     def mini_max(self, state: StateNode, depth: int, turn: Player) -> float:
-
+        """
+        Algoritmo Minimax
+        :param state: Estado do tabuleiro
+        :param depth: profundidade da árvore
+        :param turn: jogador que possui a vez de jogar
+        :return: Se MAX vencer retorna 1;
+                 Se MIN vencer retorna -1;
+                 Se o tabuleiro for preenchido e ninguém vencer, dá empate, retorna 0.
+        """
         score = self.game.evaluation_function(state)
         if score == +1 or score == -1:
             return score
@@ -29,6 +37,7 @@ class MiniMax:
                                                                    depth=node_depth,
                                                                    turn=Player.PLAYER_2))
                         pos[x][y] = "-"
+                        best_value -= node_depth
             return best_value
 
         else:
@@ -44,6 +53,7 @@ class MiniMax:
                                                                    depth=node_depth,
                                                                    turn=Player.PLAYER_1))
                         pos[x][y] = "-"
+                        best_value += node_depth
             return best_value
 
     def best_move(self, state: StateNode, player: Player) -> ((int, int), int):
@@ -58,7 +68,7 @@ class MiniMax:
                     op = self.game.operator(player, i, j)
                     new_state = self.game.apply(state, op, 1)
 
-                    opponent = Player.PLAYER_2 if player == Player.PLAYER_1 else Player.PLAYER_2
+                    opponent = Player.PLAYER_2 if player == Player.PLAYER_1 else Player.PLAYER_1
                     val = self.mini_max(new_state, 1, opponent)
                     board[i][j] = "-"
 
