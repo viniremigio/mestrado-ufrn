@@ -28,7 +28,7 @@ class MiniMax:
             if depth == self.max_depth:
                 return score
         else:
-            if score == +10 or score == -10:
+            if score == Outcome.WIN.value or score == Outcome.LOSS.value:
                 return score
 
         if self.game.is_final(state):
