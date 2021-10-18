@@ -6,9 +6,10 @@ from datetime import timedelta
 
 
 class MiniMax:
-    def __init__(self, game: Game, prune: bool):
+    def __init__(self, game: Game, prune: bool, max_depth=None):
         self.game = game
         self.prune = prune
+        self.max_depth = max_depth
 
     def mini_max(self, state: StateNode, depth: int, turn: Player, alpha=None, beta=None) -> float:
         """
@@ -23,8 +24,12 @@ class MiniMax:
                  Se o tabuleiro for preenchido e ninguém vencer, dá empate, retorna 0.
         """
         score = self.game.evaluation_function(state)
-        if score == +10 or score == -10:
-            return score
+        if self.prune:
+            if depth == self.max_depth:
+                return score
+        else:
+            if score == +10 or score == -10:
+                return score
 
         if self.game.is_final(state):
             return 0
@@ -127,16 +132,20 @@ if __name__ == '__main__':
     s: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe = TicTacToe(s)
 
-    mm1 = MiniMax(tic_tac_toe, prune=True)
+    mm1 = MiniMax(tic_tac_toe, prune=True, max_depth=1)
     mm1.compute_stats(s)
-    mm1.game.show_moves()
+    #mm1.game.show_moves()
 
     s2: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe_2 = TicTacToe(s)
 
     mm2 = MiniMax(tic_tac_toe_2, prune=False)
     mm2.compute_stats(s2)
-    mm2.game.show_moves()
+    #mm2.game.show_moves()
 
 
-
+# TODO
+"""
+Timebox para verificar pq a poda nao funciona (ou nao entendi direito)
+Terminar artigo
+"""
