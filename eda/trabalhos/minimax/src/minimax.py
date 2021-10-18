@@ -37,7 +37,6 @@ class MiniMax:
         elif turn == Player.PLAYER_1:
             best_value = -inf
             pos = state.position
-            prune_here = False
             for x in range(3):
                 for y in range(3):
                     if pos[x][y] == "-":
@@ -54,17 +53,13 @@ class MiniMax:
                         if self.prune:
                             alpha = max(alpha, best_value)
                             if beta <= alpha:
-                                prune_here = True
-
-                if prune_here:
-                    break
+                                return alpha
 
             return best_value
 
         else:
             best_value = +inf
             pos = state.position
-            prune_here = False
             for x in range(3):
                 for y in range(3):
                     if pos[x][y] == "-":
@@ -81,9 +76,8 @@ class MiniMax:
                         if self.prune:
                             beta = min(beta, best_value)
                             if beta <= alpha:
-                                prune_here = True
-                if prune_here:
-                    break
+                                return beta
+
             return best_value
 
     def decision(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
