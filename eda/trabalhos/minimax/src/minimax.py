@@ -1,15 +1,21 @@
 from game import Game, TicTacToe
 from components import StateNode, Player
+from typing import List
 from math import inf
+from timeit import default_timer as timer
+from datetime import timedelta
 
 
 class MiniMax:
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, prune: bool):
         self.game = game
+        self.prune = prune
 
-    def mini_max(self, state: StateNode, depth: int, turn: Player) -> float:
+    def mini_max(self, state: StateNode, depth: int, turn: Player, alpha=None, beta=None) -> float:
         """
         Algoritmo Minimax
+        :param beta:
+        :param alpha:
         :param state: Estado do tabuleiro
         :param depth: profundidade da árvore
         :param turn: jogador que possui a vez de jogar
@@ -35,9 +41,17 @@ class MiniMax:
                         node_depth = depth + 1
                         best_value = max(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
                                                                    depth=node_depth,
-                                                                   turn=Player.PLAYER_2))
+                                                                   turn=Player.PLAYER_2,
+                                                                   alpha=alpha,
+                                                                   beta=beta))
                         pos[x][y] = "-"
                         best_value -= node_depth
+
+                        if self.prune:
+                            alpha = max(alpha, best_value)
+                            if beta <= alpha:
+                                break
+
             return best_value
 
         else:
@@ -51,12 +65,19 @@ class MiniMax:
                         node_depth = depth + 1
                         best_value = min(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
                                                                    depth=node_depth,
-                                                                   turn=Player.PLAYER_1))
+                                                                   turn=Player.PLAYER_1,
+                                                                   alpha=alpha,
+                                                                   beta=beta))
                         pos[x][y] = "-"
                         best_value += node_depth
+
+                        if self.prune:
+                            beta = min(beta, best_value)
+                            if beta <= alpha:
+                                break
             return best_value
 
-    def best_move(self, state: StateNode, player: Player) -> ((int, int), int):
+    def best_move(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
         best_val = -inf
         best_move = (-1, -1)
 
@@ -69,7 +90,7 @@ class MiniMax:
                     new_state = self.game.apply(state, op, 1)
 
                     opponent = Player.PLAYER_2 if player == Player.PLAYER_1 else Player.PLAYER_1
-                    val = self.mini_max(new_state, 1, opponent)
+                    val = self.mini_max(new_state, 1, opponent, alpha, beta)
                     board[i][j] = "-"
 
                     if val > best_val:
@@ -86,22 +107,38 @@ class MiniMax:
             match_winner = Player.PLAYER_2.value
         print(f"Valor final: {value}. O vencedor é {match_winner}")
 
+    def compute_stats(self, state: StateNode) -> None:
+        start = timer()
+        move, val = self.best_move(state, Player.PLAYER_1, -inf, inf)
+        self.winner(val)
+        print(f"Maior profundidade: {self.game.max_depth}")
+        print(f"Melhor movimento: {move}")
+        end = timer()
+        print(timedelta(seconds=end-start))
+
 
 if __name__ == '__main__':
 
+    # board = [
+    #     ['X', 'O', 'X'],
+    #     ['O', 'O', 'X'],
+    #     ['-', '-', '-']
+    # ]
+
     board = [
-        ['X', 'O', 'X'],
-        ['O', 'O', 'X'],
+        ['-', '-', '-'],
+        ['-', '-', '-'],
         ['-', '-', '-']
     ]
 
     s: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe = TicTacToe(s)
 
-    mm = MiniMax(tic_tac_toe)
-    move, val = mm.best_move(s, Player.PLAYER_1)
+    mm1 = MiniMax(tic_tac_toe, prune=True)
+    mm1.compute_stats(s)
 
-    mm.winner(val)
-    print(f"Best move: {move}")
+    mm2 = MiniMax(tic_tac_toe, prune=False)
+    mm2.compute_stats(s)
 
-    tic_tac_toe.show_moves()
+
+

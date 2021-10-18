@@ -21,6 +21,7 @@ class TicTacToe(Game):
     def __init__(self, state: StateNode):
         self.state = state
         self.states: List[StateNode] = [self.state]
+        self.max_depth = 0
 
     def operator(self, player: Player, x: int, y: int) -> Operator:
         """
@@ -101,6 +102,8 @@ class TicTacToe(Game):
         new_state = deepcopy(state)
         new_state.position[op.x][op.y] = op.move
         new_state.depth = node_depth
+        if node_depth > self.max_depth:
+            self.max_depth = node_depth
         self.states.append(new_state)
         return new_state
 
