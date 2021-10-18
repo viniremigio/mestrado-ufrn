@@ -1,5 +1,5 @@
 from game import Game, TicTacToe
-from components import StateNode, Player
+from components import StateNode, Player, Outcome
 from math import inf
 from timeit import default_timer as timer
 from datetime import timedelta
@@ -23,7 +23,7 @@ class MiniMax:
                  Se o tabuleiro for preenchido e ninguém vencer, dá empate, retorna 0.
         """
         score = self.game.evaluation_function(state)
-        if score == +1 or score == -1:
+        if score == +10 or score == -10:
             return score
 
         if self.game.is_final(state):
@@ -93,9 +93,9 @@ class MiniMax:
     @staticmethod
     def winner(value: float) -> None:
         match_winner = "INDEFINIDO"
-        if value == +1:
+        if value > 0:
             match_winner = Player.PLAYER_1.value
-        elif value == -1:
+        elif value < 0:
             match_winner = Player.PLAYER_2.value
         elif value == 0:
             match_winner = "EMPATE"

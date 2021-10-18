@@ -7,6 +7,12 @@ class Player(Enum):
     PLAYER_2 = "MIN"
 
 
+class Outcome(Enum):
+    WIN = 10
+    LOSS = -10
+    DRAW = 0
+
+
 class StateNode:
     def __init__(self, position: List[List[str]], value: float, depth: int):
         self.value = value

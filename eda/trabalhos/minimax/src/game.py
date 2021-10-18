@@ -1,5 +1,5 @@
 from typing import List
-from components import StateNode, Operator, Player
+from components import StateNode, Operator, Player, Outcome
 from copy import deepcopy
 
 
@@ -61,34 +61,34 @@ class TicTacToe(Game):
         for row in range(0, 3):
             if board[row][0] == board[row][1] and board[row][1] == board[row][2]:
                 if board[row][0] == 'X':
-                    return +1
+                    return Outcome.WIN.value
                 elif board[row][0] == 'O':
-                    return -1
+                    return Outcome.LOSS.value
 
         # Se houve vencedor nas colunas
         for col in range(0, 3):
             if board[0][col] == board[1][col] and board[1][col] == board[2][col]:
                 if board[0][col] == 'X':
-                    return +1
+                    return Outcome.WIN.value
                 elif board[0][col] == 'O':
-                    return -1
+                    return Outcome.LOSS.value
 
         # Se houve vencedor nas diagonais
         if board[0][0] == board[1][1] and board[1][1] == board[2][2]:
             if board[0][0] == 'X':
-                return +1
+                return Outcome.WIN.value
             elif board[0][0] == 'O':
-                return -1
+                return Outcome.LOSS.value
 
         if board[0][2] == board[1][1] and board[1][1] == board[2][0]:
             if board[0][2] == 'X':
-                return +1
+                return Outcome.WIN.value
             elif board[0][2] == 'O':
-                return -1
+                return Outcome.LOSS.value
 
         # Houve empate
         else:
-            return 0
+            return Outcome.DRAW.value
 
     def apply(self, state: StateNode, op: Operator, node_depth: int) -> StateNode:
         """
