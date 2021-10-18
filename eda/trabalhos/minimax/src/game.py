@@ -113,11 +113,10 @@ class TicTacToe(Game):
         """
         for state in self.states:
             print(f"Depth: {state.depth}")
-            self._show_board(state)
+            self.show_board(state)
             print()
 
-    @staticmethod
-    def _show_board(state: StateNode) -> None:
+    def show_board(self, state: StateNode) -> None:
         """
         Imprime o estado atual do tabuleiro
         :param state:

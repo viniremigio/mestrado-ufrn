@@ -86,9 +86,9 @@ class MiniMax:
                     break
             return best_value
 
-    def best_move(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
+    def decision(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
         best_val = self.mini_max(state, 0, player, alpha, beta)
-        return best_val
+        return best_val, state
 
     @staticmethod
     def winner(value: float) -> None:
@@ -105,13 +105,18 @@ class MiniMax:
     def compute_stats(self, state: StateNode) -> None:
         print()
         start = timer()
-        val = self.best_move(state, Player.PLAYER_1, -inf, inf)
+        val, state = self.decision(state, Player.PLAYER_1, -inf, inf)
         self.winner(val)
         print(f"Maior profundidade: {self.game.max_depth}")
         print(f"Poda Alfa-Beta: {self.prune}")
         print(f"Estados gerados: {len(self.game.states)}")
+
+        print()
+        self.game.show_board(state)
+        print()
+
         end = timer()
-        print(timedelta(seconds=end-start))
+        print(f"Tempo decorrido {str(timedelta(seconds=end-start))}")
         print()
 
 
@@ -142,10 +147,3 @@ if __name__ == '__main__':
     mm2 = MiniMax(tic_tac_toe_2, prune=False)
     mm2.compute_stats(s2)
     #mm2.game.show_moves()
-
-
-# TODO
-"""
-Timebox para verificar pq a poda nao funciona (ou nao entendi direito)
-Terminar artigo
-"""
