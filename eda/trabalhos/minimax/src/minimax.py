@@ -9,8 +9,12 @@ class MiniMax:
 
     def mini_max(self, state: StateNode, depth: int, turn: Player) -> float:
 
+        score = self.game.evaluation_function(state)
+        if score == +1 or score == -1:
+            return score
+
         if self.game.is_final(state):
-            return self.game.evaluation_function(state)
+            return 0
 
         elif turn == Player.PLAYER_1:
             best_value = -inf
@@ -22,8 +26,9 @@ class MiniMax:
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
                         best_value = max(best_value, self.mini_max(state=self.game.apply(op, node_depth),
-                                                                  depth=node_depth,
-                                                                  turn=Player.PLAYER_2))
+                                                                   depth=node_depth,
+                                                                   turn=Player.PLAYER_2))
+                        #pos[x][y] = "-"
             return best_value
 
         else:
@@ -36,9 +41,28 @@ class MiniMax:
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
                         best_value = min(best_value, self.mini_max(state=self.game.apply(op, node_depth),
-                                                                  depth=node_depth,
-                                                                  turn=Player.PLAYER_1))
+                                                                   depth=node_depth,
+                                                                   turn=Player.PLAYER_1))
+                        #pos[x][y] = "-"
             return best_value
+
+    def best_move(self, state: StateNode) -> ((int, int), int):
+        best_val = -inf
+        best_move = (-1, -1)
+
+        board = state.position
+        for i in range(3):
+            for j in range(3):
+
+                if board[i][j] == "-":
+                    board[i][j] = "X"
+                    val = self.mini_max(state, 0, Player.PLAYER_2)
+                    board[i][j] = "-"
+
+                    if val > best_val:
+                        best_move = (i, j)
+                        best_val = val
+        return best_move, best_val
 
     @staticmethod
     def winner(value: float) -> None:
@@ -52,12 +76,18 @@ class MiniMax:
 
 if __name__ == '__main__':
 
-    board = [["-" for i in range(3)] for j in range(3)]
+    board = [
+        ['X', 'O', 'X'],
+        ['O', 'O', 'X'],
+        ['-', '-', '-']
+    ]
     s: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe = TicTacToe(s)
 
     mm = MiniMax(tic_tac_toe)
-    output = mm.mini_max(s, 0, Player.PLAYER_1)
-    mm.winner(output)
+    move, val = mm.best_move(s)
+
+    mm.winner(val)
+    print(f"Best move: {move}")
 
     tic_tac_toe.show_moves()
