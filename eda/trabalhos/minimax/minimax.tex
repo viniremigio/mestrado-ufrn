@@ -34,7 +34,7 @@
   Árvores minimax têm sido usadas em conceitos de jogos de soma zero. 
   Neste trabalho veremos algumas implicações desta estrutura de dados, 
   assim como pseudo-código, complexidade, trade-offs e exemplos de utilização em problemas reais. 
-  Além disso, será mostrado como exemplo uma implementação de exemplo usando o Jogo da Velha (Tic Tac Toe).
+  Além disso, será mostrada como exemplo uma implementação usando o Jogo da Velha (Tic Tac Toe).
 \end{abstract}
 
 \keywords{algoritmos, estruturas de dados, árvores, teoria dos jogos, minimax, soma zero}
@@ -45,7 +45,8 @@
 \section{Introdução}
 Este trabalho apresenta o algoritmo minimax \cite{russel2010} para jogos de soma zero. 
 Obter algoritmos que calculem uma estratégia capaz de recomendar uma ação para qualquer estado. O algoritmo minimax é usado em tomada de decisões, encontrando uma jogada ótima para um jogador, assumindo que seu oponente também joga de forma ótima.
-As demais seções são Funcionamento, incluindo Pseudocódigo e Complexidade, Trade-offs, Aplicações e por fim as Conclusões do trabalho.
+
+As demais seções são Funcionamento, incluindo Pseudocódigo, Complexidade e um exemplo aplicado ao Jogo da Velha (Tic Tac Toe), Trade-offs, Aplicações e por fim as Conclusões do trabalho.
 
 \subsection{Soma Zero}
 Em um jogo determinístico de soma zero, o placar final de um jogo em que dois jogadores são adversários.
@@ -57,7 +58,7 @@ Além disso, os métodos de busca são sempre adversários, puramente competitiv
 Considerando essa premissa, o placar total deve ser sempre zero.
 Cada jogador possui a informação completa, ou seja, tem a visão das jogadas realizadas pelo adversário. Os jogos são realizados em turno, ou seja, cada jogado possui a sua vez de jogar.
 
-Muitos trabalhos com variações do minimax têm sido apresentados no decorrer dos anos na literatura \cite{Diderich93}
+Muitos trabalhos com variações do minimax têm sido apresentados no decorrer dos anos na literatura \cite{Diderich93}.
 
 \section{Algoritmo Minimax}
 Em uma busca minimax, a árvore representa o espaço de estados, onde os jogadores se alternam nos movimentos e o valor minimax é computado para cada nó, onde se busca a melhor utilidade contra um agente adversário ótimo, ou seja, a premissa é que o adversário jogue de forma racional
