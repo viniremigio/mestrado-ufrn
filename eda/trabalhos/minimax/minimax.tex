@@ -18,7 +18,7 @@
 
 \begin{document}
 
-\title{Árvores Minimax para Jogos de Soma Zero}
+\title{Árvores Minimax}
 \subtitle{DIM0806 - Estruturas de Dados e Algoritmos}
 
 \author{Tiago Vinícius Remígio da Costa}
@@ -31,10 +31,13 @@
 }
 
 \begin{abstract}
-  Árvores minimax têm sido usadas em conceitos de jogos de soma zero. 
-  Neste trabalho veremos algumas implicações desta estrutura de dados, 
-  assim como pseudo-código, complexidade, trade-offs e exemplos de utilização em problemas reais. 
-  Além disso, será mostrada como exemplo uma implementação usando o Jogo da Velha (Tic Tac Toe).
+  Árvores minimax têm sido usadas no estudo de jogos de soma zero.
+  Neste artigo veremos algumas implicações desta estrutura de dados, 
+  assim como pseudo-código do algoritmo para encontrar o melhor estado ,complexidade, trade-offs e exemplos de utilização. 
+
+  Para tornar o conceito mais didático, será mostrada uma implementação usando o Jogo da Velha {\itshape(Tic Tac Toe)}, onde dois jogadores se enfrentam.
+
+  Também será vista uma implementação da poda alfa-beta, para reduzir o espaço de buscas.
 \end{abstract}
 
 \keywords{algoritmos, estruturas de dados, árvores, teoria dos jogos, minimax, soma zero}
@@ -43,57 +46,82 @@
 \pagestyle{plain}
 
 \section{Introdução}
-Este trabalho apresenta o algoritmo minimax \cite{russel2010} para jogos de soma zero. 
-Obter algoritmos que calculem uma estratégia capaz de recomendar uma ação para qualquer estado. O algoritmo minimax é usado em tomada de decisões, encontrando uma jogada ótima para um jogador, assumindo que seu oponente também joga de forma ótima.
 
-As demais seções são Funcionamento, incluindo Pseudocódigo, Complexidade e um exemplo aplicado ao Jogo da Velha (Tic Tac Toe), Trade-offs, Aplicações e por fim as Conclusões do trabalho.
+Jogos têm servido de inspiração para o estudo da inteligência artificial desde os anos 50 a partir dos primeiros programas de jogos de xadrez escritos por Claude Shannon e Alan Turing. 
+Estados de um jogo, como Chess e Go, são facilmente representados e os agentes inteligentes possuem um conjunto finito de ações \cite{russel2010}. 
+O fato desses agentes serem adversários introduz um componente de incerteza, já que esses oponentes não sabem qual a ação a ser tomada pelo seu adversário.
+
+O Minimax escolhe uma jogada ótima para um jogador, assumindo que seu adversário também realiza jogadas de maneira ótima \cite{Jain17}.
+Obter algoritmos que calculem uma estratégia capaz de recomendar uma ação para qualquer estado. 
+O algoritmo minimax é usado em tomada de decisões, encontrando uma jogada ótima para um jogador, assumindo que seu oponente também joga de forma ótima.
+
+Além disso, a pode permite ignorar ramos da árvore que não fazem diferença no resultado final, e funções heurísticas permitem a aproximação da utilidade de um estado sem a necessidade de realizar uma busca exploratória.
+
+As outras seções deste artigo são o conceito de soma zero, uma análise sobre o algoritmo minimax, incluindo pseudocódigo, Complexidade e um exemplo aplicado ao Jogo da Velha (Tic Tac Toe). 
+Por fim, veremos alguns trade-offs, o que nos leva a poda alfa-beta. Também serão listadas algumas aplicações e as conclusões do trabalho.
 
 \subsection{Soma Zero}
 Em um jogo determinístico de soma zero, o placar final de um jogo em que dois jogadores são adversários.
-para cada jogador pode ser vitória {\itshape(1 ponto)}, empate {\itshape(0 pontos)} ou derrota {\itshape(-1 ponto)}. 
-Agentes jogadores possuem utilidades opostas. Isso permite que a função utilidade seja a mesma.
+Com o pressuposto da soma zero, os jogadores possuem utilidades opostas. Isso permite que a função heurística de utilidade seja a mesma.
+Para cada jogador pode ser vitória {\itshape(1 ponto)}, empate {\itshape(0 pontos)} ou derrota {\itshape(-1 ponto)}, onde a soma das utilidades para ambos é sempre zero.
 
-Além disso, os métodos de busca são sempre adversários, puramente competitivos, onde cada jogador está tentando ganhar e também provocando a derrota do oponente. O jogador que tenta ganhar é chamado de maximizador, tentando maximizar seu score, enquanto o oponente é chamado de minimizador, tentando minimizar o score do maximizador \cite{Aradhya01}.
+Os métodos de busca são sempre adversários, puramente competitivos, onde cada jogador está tentando ganhar e também provocando a derrota do oponente. 
+O jogador que tenta ganhar é chamado de {\itshape maximizador (MAX)}, tentando maximizar seu score, enquanto o oponente é chamado de {\itshape minimizador (MIN)}, tentando minimizar o score do maximizador \cite{Aradhya01}.
 
-Considerando essa premissa, o placar total deve ser sempre zero.
 Cada jogador possui a informação completa, ou seja, tem a visão das jogadas realizadas pelo adversário. Os jogos são realizados em turno, ou seja, cada jogado possui a sua vez de jogar.
 
-Muitos trabalhos com variações do minimax têm sido apresentados no decorrer dos anos na literatura \cite{Diderich93}.
+Por ser uma técnica importante na IA para estudo de jogos adversários, muitos trabalhos com variações do minimax têm sido apresentados na literatura \cite{Diderich93} no decorrer dos anos.
 
-\section{Algoritmo Minimax}
-Em uma busca minimax, a árvore representa o espaço de estados, onde os jogadores se alternam nos movimentos e o valor minimax é computado para cada nó, onde se busca a melhor utilidade contra um agente adversário ótimo, ou seja, a premissa é que o adversário jogue de forma racional
-Para definir Minimax, necessitaremos de alguns conceitos.
+\section{Minimax}
+Em uma busca minimax, a árvore representa o espaço de estados, onde os jogadores se alternam nos movimentos. O valor minimax é computado para cada nó, buscando a melhor utilidade contra um agente adversário ótimo, que jogue de forma racional.
 
 A idéia do Minimax é determinar uma estratégia ótima para o jogador MAX e então decidir o melhor primeiro movimento.
 
 Todos os estados possuem um valor associado, onde o maximizador realiza uma jogada para aumentá-lo e o minimizador realiza uma jogada para diminuí-lo. 
 O valor é calculado através de uma heurística, chamada de função de utilidade.
 
+Para definir Minimax, necessitaremos de alguns conceitos:
+
 \begin{itemize}
-  \item{Estados: S, onde S0 é o estado inicial;}
-  \item{Jogadores: P = {1...N}}
-  \item{Ações: A}
-  \item{Função de Transição: SxA -> S}
-  \item{Teste de parada: S -> {t,f}}
-  \item{Utilidades terminais: SxP -> R}
+  \item \textbf{Estados inicial}: posição dos movimentos no tabuleiro;
+  \item \textbf{Operadores}: movimentos válidos que um jogador pode fazer;
+  \item \textbf{Estados de parada (terminais)}: Estados que determinam o fim do jogo;
+  \item \textbf{Função de utilidade}: Retorna um valor númerico para o jogo, representando vitória, derrota ou empate.
 \end{itemize}
 
-Solução par aum jogador é uma política: S -> A
+\subsection{Algoritmo Minimax}
 
-\subsection{Passos do Minimax}
+A figura \ref{ttt_parctree} mostra uma árvore parcial das jogadas para o Jogo da Velha (Tic-Tac-Toe), 
+que será utilizado para exemplificar o funcionamento do Minimax.
+
+\begin{figure}[h]
+  \includegraphics[width=8cm]{tictactoe_tree.png}
+  \caption{Árvore parcial para o jogo da velha}
+  \label{ttt_parctree}
+\end{figure}
+
+Aplicando os conceitos de Minimax que vimos anteriormente, temos que:
 
 \begin{itemize}
-  \item Gerar a árvore, da raíz até os estados terminais;
-  \item Aplicar a função de utilidade para cada estado terminal para computar o valor;
+  \item \textbf{Estados inicial}: tabuleiro vazio, onde o jogador MAX fará a primeira jogada;
+  \item \textbf{Operadores}: O jogador MAX pode marcar um {\itshape X} em uma posição vazia, enquanto o jogador MIN pode marcar o {\itshape O};
+  \item \textbf{Estados de parada (terminais)}: Estados que determinam o fim do jogo, que pode ser a vitória de MAX por sequência de {\itshape XXX} em linha, coluna ou diagonal. 
+  Também pode ser a derrota de MAX e finalmente um empate;
+  \item \textbf{Função de utilidade}: Retorna {\itshape +1} para a vitória de MAX, {\itshape -1} para a derrota de MAX ou {\itshape 0} para empate.
+\end{itemize}
+
+Portanto, o algoritmo Minimax pode ser resumido nos seguintes passos:
+
+\begin{itemize}
+  \item Gerar a árvore, a partir da raíz, que representa o estado inicial até os estados terminais;
+  \item Aplicar a função de utilidade em cada estado terminal para computar o valor;
   \item Usar a função de utilidade para determinar a utilidade dos nós um nível acima na árvore de busca;
   \item Calcular o valor dos nós filhos até a raíz, uma camada por vez;
-  \item MAX escolhe o movimento que leva ao maior valor 
+  \item MAX escolhe o movimento que leva ao maior valor.
 \end{itemize}
 
-O movimento realizado é chamado de decisão minimax, por maximizar a utilidade sob a premissa que o oponente jogará para minimizá-lo perfeitamente.
-
-\subsection{Pseudo-código}
-O pseudocódigo do algoritmo Minimax segue como na imagem abaixo. 
+\subsection{Pseudocódigo}
+O pseudocódigo do algoritmo Minimax a seguir descreve o básico funcionamento do algoritmo. 
 \footnote{A implementação do algoritmo pode ser encontrada em \href{https://bit.ly/3jc3wH0}{https://bit.ly/3jc3wH0}}
 As funções {\itshape minValue} e {\itshape maxValue} possuem o mesmo funcionamento, apenas invertendo a lógica.
 
@@ -103,40 +131,34 @@ As funções {\itshape minValue} e {\itshape maxValue} possuem o mesmo funcionam
   \caption{Algoritmo Minimax}
   \label{alg:generator}
   \SetKwProg{minimax}{Function \emph{minimax}}{}{end}
-  \minimax{Object state}{
-    \If{ state $s$ is final}{
-        \Return{$s$}\;
+  \minimax{Object state, Player player}{
+    \If{ state is final}{
+        \Return{state}\;
     }
-    minValue($s$)\;
-    maxValue($s$)\;
-  }
-
-  \SetKwProg{maxValue}{maxValue}{}{}
-  \maxValue{$s$}{
-    init v = -inf\;
-    \ForEach{successor in s}{
-      v = max(v, value(successor))\;
-    }
+    \If{player is MAX}{
+      init v = -inf\;
+      \ForEach{successor in s}{
+        v = max(v, minimax(state=successor, player=MIN))\;
+      }
     \KwRet{v}\;
-  }
-
-  \SetKwProg{minValue}{minValue}{}{}
-  \minValue{$s$}{
-    init v = +inf\;
-    \ForEach{successor in s}{
-      v = min(v, value(successor))\;
     }
+    \ElseIf{player is MIN}{
+      init v = +inf\;
+      \ForEach{successor in s}{
+        v = min(v, minimax(state=successor, player=MAX))\;
+      }
     \KwRet{v}\;
+    }
   }
 \end{algorithm}
 
-Na figura abaixo segue a árvore minimax gerada pelo algoritmo descrito. 
+A árvore minimax da figura \ref{tictactoe} foi gerada pela implementação do algoritmo descrito. 
 Para simplificar a visualização, o estado inicial considerado {\itshape(Depth 0)} já possui algumas jogadas.
-A melhor decisão que o algoritmo retorna, ou seja, maximizando o valor para o jogador MAX é marcar a posição (2,2) do tabuleiro com X.
 
 \begin{figure}[h]
   \includegraphics[width=8cm]{minimax_tree_1.png}
   \caption{Árvore MiniMax para um jogo da Velha, dado um estado inicial}
+  \label{tictactoe}
 \end{figure}
 
 \subsection{Complexidade}
@@ -148,27 +170,20 @@ Considerando que m é a profundidade máxima da árvore e b é a quantidade de m
   \item Complexidade de espaço: $O(bm)$
 \end{itemize}
 
-Em termos práticos, esta complexidade de tempo é impraticável. Para isso, técnicas de poda são necessárias ao se trabalhar como representação Minimax, como será mostrado na próxima seção.
-
-\section{Funções de avaliação}
-
-A função de avaliação computa o valor do board dependendo da posição das pessoas. Também é chamada de função heurística \cite{Aradhya02}. 
-Uma função de avaliação é projetada para retornar uma estimativa da utilidade esperada do jogo a partir de um estado definido. 
-A medida de qualidade da função de avaliação deve concordar com a função de utilidade nos estados terminais. Além disso, não deve demorar muito tempo para executar.
-
-Existe um trade-off entre a acurácia da função de avaliação e o custo do tempo de execução. 
-A maioria dos jogos usam uma função de avaliação linear.
-
-No caso do Jogo da Velha, a função de avaliação verifica as linhas, colunas e diagonais procurando se MAX venceu, se MIN venceu, ou se as jogadas se esgotaram, caracterizando o empate.
+Em termos práticos, esta complexidade de tempo é impraticável.
+Para minimizar um pouco deste problema, técnicas de poda, como a alfa-beta, são necessárias para trabalhar como representação Minimax, como será mostrado na próxima seção.
 
 
 \section{Trade-offs}
 
-Em problemas reais, é impossível buscar até as folhas. 
-Uma solução é trabalhar com busca em profundidade limitada, substituir por uma função de avaliação para posições que não são folhas.
+Existe um trade-off entre a acurácia da função de avaliação e o custo do tempo de execução.  A maioria dos jogos usam uma função de avaliação linear.
+No caso do Jogo da Velha, a função de avaliação verifica as linhas, colunas e diagonais procurando se MAX venceu, se MIN venceu, ou se as jogadas se esgotaram, caracterizando o empate.
+
+Em problemas reais, é impossível computacionalmente buscar até as folhas, dada a profundidade da árvore e quantidade de estados gerados.
+Uma solução possível é trabalhar com busca em profundidade limitada, criando por uma função de avaliação para posições que não são folhas.
 Não há garantia que o resultado será ótimo, por isso aumentar a profundidade faz bastante diferença.
 
-Se a profundidade for maior, a complexidade da função pode ser menor. Mas se a poda for mais rasa, a função de avaliação precisaria ser mais complexa. 
+Se a profundidade for maior, a complexidade da função de avaliação pode ser menor. Mas se a poda for mais rasa, a função de avaliação precisaria ser mais complexa. 
 Acarretando maior capacidade de computação. 
 O ideal é chegar uma ponderação na qual consiga-se descer para uma maior profundidade e que a função não seja muito complexa de calcular.
 
@@ -176,7 +191,7 @@ Funções de avaliação pontuam estados não-terminais na busca de profundidade
 Função ideal retornaria o valor minimax real da posição.
 
 \subsection{Poda Alfa-Beta}
-É uma técnica de otimização para o algoritmo Minimax para reduzir o tempo de computação, por meio de podar branches da árvore por já detectar movimentos melhores disponíveis \cite{Aradhya04}.
+É uma técnica de otimização para o algoritmo Minimax para reduzir o tempo de computação, por meio de podar ramos (branches) da árvore por previamente detectar movimentos melhores disponíveis \cite{Aradhya04}.
 Assumindo que uma função de avaliação foi implementada junto a uma busca minimax, mesmo assim, o espaço de jogadas a frente ficará bastante limitado, se há a necessidade de percorrer toda a árvore.
 Daí vem o conceito da poda: uma forma de tomar uma decisão minimax correta sem precisar percorrer toda a árvore de buscas, buscando não computar ramificações que possivelmente não interferem na decisão minimax.
 
@@ -197,11 +212,15 @@ Não afeta o minimax para raíz
 Valores dos nós intermediários podem estar errados
 
 \section{Aplicações}
-Muito utilizado em Teoria dos Jogos, na modelagem de problemas de adversários, comum em sistemas multiagentes, na economia.
+Por ser bastante didático, o Minimax é muito utilizado em modelagem de problemas de jogos adversários, como jogo da velha, go, xadrez, damas entre outros jogos e situações onde dois jogadores/agentes inteligentes são adversários.
+Esses jogos possuem em comum a possibilidade de ver claramente cada jogada dos jogadores. Além disso, toda informação do tabuleiro está sempre exposta.
 
 \section{Conclusões}
 O algoritmo Minimax utiliza árvores como estrutura de dados e busca representar dois agentes que buscam vencer, provocando a derrota do outro, em um jogo de soma zero. 
-Este conceito tem sido bastante estudado na Economia, através da Teoria dos Jogos. Como a maioria das decisões ótimas de jogos são intratáveis, algoritmos precisam lidar com premissas e aproximações.
+Este conceito têm sido bastante estudado na Economia, através da Teoria dos Jogos. 
+Como a maioria das decisões ótimas de jogos são intratáveis, algoritmos precisam lidar com premissas e aproximações.
+
+Na prática, a geração dos estados é extremamente custosa computacionalmente. Técnicas como a poda alfa-beta podem ajudar, eliminando ramos da árvore que não impactam no resultado final.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sample-base}
