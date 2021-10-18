@@ -82,12 +82,7 @@ class MiniMax:
             return best_value
 
     def best_move(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
-        best_val = -inf
-        board = state.position
-
-        val = self.mini_max(state, 0, player, alpha, beta)
-        if val > best_val:
-            best_val = val
+        best_val = self.mini_max(state, 0, player, alpha, beta)
         return best_val
 
     @staticmethod
