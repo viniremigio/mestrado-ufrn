@@ -44,9 +44,10 @@ class MiniMax:
                                                                    alpha=alpha,
                                                                    beta=beta))
                         pos[x][y] = "-"
-                        best_value -= node_depth
-                        alpha = max(alpha, best_value)
+                        best_value = best_value - node_depth
+
                         if self.prune:
+                            alpha = max(alpha, best_value)
                             if beta <= alpha:
                                 prune_here = True
 
@@ -70,10 +71,10 @@ class MiniMax:
                                                                    alpha=alpha,
                                                                    beta=beta))
                         pos[x][y] = "-"
-                        best_value += node_depth
+                        best_value = best_value + node_depth
 
-                        beta = min(beta, best_value)
                         if self.prune:
+                            beta = min(beta, best_value)
                             if beta <= alpha:
                                 prune_here = True
                 if prune_here:
@@ -83,27 +84,18 @@ class MiniMax:
     def best_move(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
         best_val = -inf
         board = state.position
-        for i in range(3):
-            for j in range(3):
 
-                if board[i][j] == "-":
-                    op = self.game.operator(player, i, j)
-                    new_state = self.game.apply(state, op, 1)
-
-                    opponent = Player.PLAYER_2 if player == Player.PLAYER_1 else Player.PLAYER_1
-                    val = self.mini_max(new_state, 1, opponent, alpha, beta)
-                    board[i][j] = "-"
-
-                    if val > best_val:
-                        best_val = val
+        val = self.mini_max(state, 0, player, alpha, beta)
+        if val > best_val:
+            best_val = val
         return best_val
 
     @staticmethod
     def winner(value: float) -> None:
         match_winner = "INDEFINIDO"
-        if value > 0:
+        if value == +1:
             match_winner = Player.PLAYER_1.value
-        elif value < 0:
+        elif value == -1:
             match_winner = Player.PLAYER_2.value
         elif value == 0:
             match_winner = "EMPATE"
@@ -117,6 +109,7 @@ class MiniMax:
         self.winner(val)
         print(f"Maior profundidade: {self.game.max_depth}")
         print(f"Poda Alfa-Beta: {self.prune}")
+        print(f"Estados gerados: {len(self.game.states)}")
         end = timer()
         print(timedelta(seconds=end-start))
         print()
@@ -126,7 +119,7 @@ if __name__ == '__main__':
 
     board = [
         ['X', 'O', 'X'],
-        ['X', 'O', 'O'],
+        ['O', 'O', 'X'],
         ['-', '-', '-']
     ]
 
@@ -143,8 +136,11 @@ if __name__ == '__main__':
     mm1.compute_stats(s)
     mm1.game.show_moves()
 
-    mm2 = MiniMax(tic_tac_toe, prune=False)
-    mm2.compute_stats(s)
+    s2: StateNode = StateNode(board, -inf, 0)
+    tic_tac_toe_2 = TicTacToe(s)
+
+    mm2 = MiniMax(tic_tac_toe_2, prune=False)
+    mm2.compute_stats(s2)
     mm2.game.show_moves()
 
 
