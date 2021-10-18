@@ -11,7 +11,7 @@ class MiniMax:
         self.prune = prune
         self.max_depth = max_depth
 
-    def mini_max(self, state: StateNode, depth: int, turn: Player, alpha=None, beta=None) -> float:
+    def mini_max(self, state: StateNode, depth: int, turn: Player, alpha=None, beta=None) -> (float, StateNode):
         """
         Algoritmo Minimax
         :param beta:
@@ -26,13 +26,13 @@ class MiniMax:
         score = self.game.evaluation_function(state)
         if self.prune:
             if depth == self.max_depth:
-                return score
+                return score, state
         else:
             if score == Outcome.WIN.value or score == Outcome.LOSS.value:
-                return score
+                return score, state
 
         if self.game.is_final(state):
-            return 0
+            return 0, state
 
         elif turn == Player.PLAYER_1:
             best_value = -inf
@@ -42,20 +42,21 @@ class MiniMax:
                     if pos[x][y] == "-":
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
-                        best_value = max(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
+                        res, new_state = self.mini_max(state=self.game.apply(state, op, node_depth),
                                                                    depth=node_depth,
                                                                    turn=Player.PLAYER_2,
                                                                    alpha=alpha,
-                                                                   beta=beta))
+                                                                   beta=beta)
+                        best_value = max(best_value, res)
                         pos[x][y] = "-"
                         best_value = best_value - node_depth
 
                         if self.prune:
                             alpha = max(alpha, best_value)
                             if beta <= alpha:
-                                return alpha
+                                return alpha, new_state
 
-            return best_value
+            return best_value, new_state
 
         else:
             best_value = +inf
@@ -65,24 +66,25 @@ class MiniMax:
                     if pos[x][y] == "-":
                         op = self.game.operator(turn, x, y)
                         node_depth = depth + 1
-                        best_value = min(best_value, self.mini_max(state=self.game.apply(state, op, node_depth),
-                                                                   depth=node_depth,
-                                                                   turn=Player.PLAYER_1,
-                                                                   alpha=alpha,
-                                                                   beta=beta))
+                        res, new_state = self.mini_max(state=self.game.apply(state, op, node_depth),
+                                                       depth=node_depth,
+                                                       turn=Player.PLAYER_1,
+                                                       alpha=alpha,
+                                                       beta=beta)
+                        best_value = min(best_value, res)
                         pos[x][y] = "-"
                         best_value = best_value + node_depth
 
                         if self.prune:
                             beta = min(beta, best_value)
                             if beta <= alpha:
-                                return beta
+                                return beta, new_state
 
-            return best_value
+            return best_value, new_state
 
     def decision(self, state: StateNode, player: Player, alpha=None, beta=None) -> ((int, int), int):
-        best_val = self.mini_max(state, 0, player, alpha, beta)
-        return best_val, state
+        best_val, best_state = self.mini_max(state, 0, player, alpha, beta)
+        return best_val, best_state
 
     @staticmethod
     def winner(value: float) -> None:
@@ -99,7 +101,7 @@ class MiniMax:
     def compute_stats(self, state: StateNode) -> None:
         print()
         start = timer()
-        val, state = self.decision(state, Player.PLAYER_1, -inf, inf)
+        (val, state) = self.decision(state, Player.PLAYER_1, -inf, inf)
         self.winner(val)
         print(f"Maior profundidade: {self.game.max_depth}")
         print(f"Poda Alfa-Beta: {self.prune}")
