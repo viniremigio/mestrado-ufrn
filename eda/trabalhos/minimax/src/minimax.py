@@ -135,11 +135,11 @@ if __name__ == '__main__':
 
     mm1 = MiniMax(tic_tac_toe, prune=True, max_depth=1)
     mm1.compute_stats(s)
-    #mm1.game.show_moves()
+    mm1.game.show_moves()
 
     s2: StateNode = StateNode(board, -inf, 0)
     tic_tac_toe_2 = TicTacToe(s)
 
     mm2 = MiniMax(tic_tac_toe_2, prune=False)
     mm2.compute_stats(s2)
-    #mm2.game.show_moves()
+    mm2.game.show_moves()

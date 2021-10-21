@@ -187,29 +187,13 @@ Se a profundidade for maior, a complexidade da função de avaliação pode ser 
 Acarretando maior capacidade de computação. 
 O ideal é chegar uma ponderação na qual consiga-se descer para uma maior profundidade e que a função não seja muito complexa de calcular.
 
-Funções de avaliação pontuam estados não-terminais na busca de profundidade limitada.
-Função ideal retornaria o valor minimax real da posição.
-
 \subsection{Poda Alfa-Beta}
 É uma técnica de otimização para o algoritmo Minimax para reduzir o tempo de computação, por meio de podar ramos (branches) da árvore por previamente detectar movimentos melhores disponíveis \cite{Aradhya04}.
 Assumindo que uma função de avaliação foi implementada junto a uma busca minimax, mesmo assim, o espaço de jogadas a frente ficará bastante limitado, se há a necessidade de percorrer toda a árvore.
-Daí vem o conceito da poda: uma forma de tomar uma decisão minimax correta sem precisar percorrer toda a árvore de buscas, buscando não computar ramificações que possivelmente não interferem na decisão minimax.
+Daí vem o conceito da poda: uma forma de tomar uma decisão minimax correta sem precisar percorrer toda a árvore, buscando não computar ramificações que possivelmente não interferem na decisão minimax.
 
-O alfa é o melhor valor que o jogador MAX pode obter para o nível atual ou acima. Já o beta é o melhor valor que o jogador MIN pode obter para o nível atual ou acima.
+Ao aplicar a poda alfa-beta, a complexidade do algoritmo tende a cair de $O(b^m)$ para $O(b^{m/2})$ para encontrar o melhor movimento.
 
-\subsubsection{Passos da poda}
-\begin{itemize}
-  \item Computando o valor MIN em algum nó N
-  \item Percorrer os filhos de N
-  \item A estimativa de n a respeito do valor MIN de seus filhos está Considerando
-  \item O valor de N é importante para MAX
-  \item Seja a o melhor valor de MAX em qualquer ponto até a raiz
-  \item Se n se torna pior que a, MAX irá evitá-lo, então podemos parar de considerar os demais filhos de n
-\end{itemize}
-
-\subsubsection{Propriedades da poda alfa-beta}
-Não afeta o minimax para raíz
-Valores dos nós intermediários podem estar errados
 
 \section{Aplicações}
 Por ser bastante didático, o Minimax é muito utilizado em modelagem de problemas de jogos adversários, como jogo da velha, go, xadrez, damas entre outros jogos e situações onde dois jogadores/agentes inteligentes são adversários.
